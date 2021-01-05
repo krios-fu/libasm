@@ -6,7 +6,7 @@ OBJS		= ${SRCS:.s=.o}
 
 OBJS_BONUS	= ${SRCS_BONUS:.s=.o}
 
-NAME		= libsam.a
+NAME		= libasm.a
 
 NA			= nasm
 

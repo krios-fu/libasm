@@ -21,11 +21,10 @@ while:
 
 cmp_byte:
             mov		dl, BYTE [rdi + rcx]	
-			sub		dl, BYTE [rsi + rcx]	
-			cmp		dl, 0				
+			cmp		dl, BYTE [rsi + rcx]					
 			jz		equal
-			jl		minor
-            jg      major
+			jb		minor
+            ja      major
 major:
 			mov		rax, 1
 			ret
