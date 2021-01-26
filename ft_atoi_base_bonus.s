@@ -1,48 +1,48 @@
 section .text
-	global 		_ft_atoi_base_bonus
+	global 		_ft_atoi_base
 	extern 		_ft_strlen
 
-_ft_atoi_base_bonus:								; resteamos los distintos contadores == 0
-					xor		rax, rax				; total
-					xor		rcx, rcx				; contador longitud base
-					xor		r8,  r8					; contador while
-					xor		r9,  r9					; contador longitud numero a convertir
-					xor		r10, r10				; bandera signo 0 positivo 1 negativo
-					xor		r12, r12				; contador while
+_ft_atoi_base:								
+					xor		rax, rax				
+					xor		rcx, rcx				
+					xor		r8,  r8					
+					xor		r9,  r9					
+					xor		r10, r10				
+					xor		r12, r12				
 
 len_base:
-					push	rdi						; guardamos en la pila str
-					mov		rdi, rsi				; copiamos base a rdi, rdi es el argumento que recibe ft_strlen
-					call	_ft_strlen				; calculamos la longitud, El valor retornado queda en RAX
-					pop		rdi						; recuperamos la cadena str
-					mov		rcx, rax				; gurdamos la longitud en rcx 
-					cmp		rcx, 1					; verifiamos la longitud 
+					push	rdi						
+					mov		rdi, rsi				
+					call	_ft_strlen				
+					pop		rdi						
+					mov		rcx, rax				 
+					cmp		rcx, 1					
 					jz		error_base
 					cmp		rcx, 0
 					jz		error_base
-					jmp		cmp_base_while1			; saltamos a comparar la base con si misma, caracteres no repetidos 
+					jmp		cmp_base_while1			
 
 inc_count_i:
 					inc		r12
 
 cmp_base_while1:
-					xor		r8,  r8					; j = 0
-					add		r8,  r12				; j += i
-					inc		r8						; j ++
-					cmp		BYTE [rsi + r12], 0		; base [j] != '\0'
-					jnz		cmp_base_while2			; saltamos al segundo ciclo 
-					xor		r12, r12				; sino se cumple el salto reseteamos contadores
+					xor		r8,  r8					
+					add		r8,  r12				
+					inc		r8						
+					cmp		BYTE [rsi + r12], 0		
+					jnz		cmp_base_while2			 
+					xor		r12, r12				
 					xor		r8,  r8
-					jmp		cmp_bases_space			; y saltamos a comparar los isspace ``\t''   ``\n''    ``\v''    ``\f''    ``\r''    `` ''
+					jmp		cmp_bases_space			
 inc_count_j:
 					inc		r8
 
 cmp_base_while2: 
-					mov		dl, BYTE [rsi + r12]	; copiamos a tmp el caracter base [j]
-					cmp		dl, BYTE [rsi + r8]		; comparamos base [j] ==  base [i] ; i = j + 1
+					mov		dl, BYTE [rsi + r12]	
+					cmp		dl, BYTE [rsi + r8]		
 					je		error_base
-					cmp		BYTE [rsi + r8], 0		; final de la cadena base
-					jz		inc_count_i				; incrementamos contadores 
+					cmp		BYTE [rsi + r8], 0		
+					jz		inc_count_i				 
 					jmp		inc_count_j
 
 inc_count_space:
@@ -89,27 +89,27 @@ next_space:											; ``\t''   ``\n''    ``\v''    ``\f''    ``\r''    `` ''
 count_minus:
 					xor		r10, 0x00000001			; bandera signo 0 positivo 1 negativo; 0 * 0 = 0; 0 * 1 = 1; 1 * 1 = 0
 next:
-					inc 	rdi						; incrementamos str++
-cmp_minus:											; ciclo mientras sea - o +
+					inc 	rdi						
+cmp_minus:											
 					cmp		BYTE[rdi], 45
 					je 		count_minus
 					cmp 	BYTE[rdi], 43
 					je 		next
-					xor		r12, r12				; reseteamos valores 
+					xor		r12, r12				
 					xor		rax, rax
 					jmp 	str_while_count
 
 flag:
-					inc		r9						; calculamos longitud numero a convertir, lo utilizamos como banedera 
+					inc		r9						
 atoi_count_x:
 					inc		r12
-str_while_count:									; hay dos posibles salidas del ciclo 
+str_while_count:									 
 					xor		r8,  r8
 					cmp		BYTE [rdi + r12], 0
 					jnz		base_while_count					
 					xor		r12, r12
 					dec		r9						; flag-- 
-					jmp		str_while				; salida 1: fin de cadena str
+					jmp		str_while				
 atoi_count_y:
 					inc		r8
 base_while_count: 		
@@ -118,19 +118,19 @@ base_while_count:
 					je		flag
 					cmp		BYTE [rsi + r8], 0
 					jnz		atoi_count_y
-					xor		r12, r12				; reseteamos contador
-					dec		r9						; flag-- 
-					jmp		str_while				; salida 2: el caracter no se encuentra en la base 
+					xor		r12, r12				
+					dec		r9						 
+					jmp		str_while				 
 
-atoi_mul:											; atoi
-					mul		rcx						; RAX * RCX (RCX = LONGITUD BASE)
+atoi_mul:											
+					mul		rcx						
 atoi_count_i:
 					inc		r12
-str_while:											; hay 3 posibles salidas del ciclo 
+str_while:											 
 					xor		r8,  r8
 					cmp		r12, r9	
 					jle		base_while
-					jmp		return					; salida 1: fin de cadena 
+					jmp		return					
 atoi_count_j:
 					inc		r8
 base_while:
@@ -139,19 +139,19 @@ base_while:
 					je		atoi
 					cmp		BYTE [rsi + r8], 0
 					jnz		atoi_count_j
-					jmp		return					; salida 2: caracter no encontrado en la base 
+					jmp		return					 
 
 error_base:
-					mov		rax, 0					; RAX = 0
-					ret								; RETURN RAX por defecto
+					mov		rax, 0					
+					ret								
 atoi:				
-					add		rax, r8					; RAX += R8 (R8 = posicion del caracter en la base)
+					add		rax, r8					
 					cmp		r12, r9									
-					jl		atoi_mul				; (r12 < r9) saltamos a multiplicar sino caemos en return 
-return:												; salida 3: (r12 == r9)
-					cmp		r10, 0x00000001			; verificamos que el numero se par o impar
-					je		is_neg					; r10 == 1 saltamo a convertir a negativo sino
-					ret								; retornamos positivo
+					jl		atoi_mul				; (r12 < r9)  
+return:												;  (r12 == r9)
+					cmp		r10, 0x00000001			 
+					je		is_neg					; r10 == 1 
+					ret								
 is_neg:
-					neg		rax						; convertimos a negativo
-					ret								; retornamos negativo 
+					neg		rax						
+					ret							

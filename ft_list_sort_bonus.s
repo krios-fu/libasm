@@ -1,56 +1,60 @@
 section .text
-    global _ft_list_sort_bonus
+    global _ft_list_sort
 
-_ft_list_sort_bonus:                                        ; t_list **begin, rsi = _funcion
-                        push    rbx                         ; RBX = será list->next;
-                        push    r12                         ; R12 = guardará el inicio de la lista
-                        cmp     rdi, 0                      ; Verificamos que la lista no esté vacia
-                        jz      finish                      ; Igual a cero finalizamos
-                        cmp     rsi, 0                      ; Verificamos la existencia de una funcion
-                        jz      finish                      ; Igual a cero finalizamos
-                        mov     r12, [rdi]                  ; Guardamos el inicio de la lista
-                        mov     rcx, [rdi]                  ; Copiamos la direccion de rdi
-                        mov     rbx, [rcx + 8]              ; Guardamos el siguiente elemento.  RBX = list->next;
+_ft_list_sort:          cmp     BYTE[rdi], 0
+                        je      return2                    
+                        push    rbx                         
+                        push    r12                         
+                        cmp     rdi, 0                     
+                        jz      finish                      
+                        cmp     rsi, 0                      
+                        jz      finish                     
+                        mov     r12, [rdi]                  
+                        mov     rcx, [rdi]                  
+                        mov     rbx, [rcx + 8]             
                         jmp     compare_start
 
 element_base:
-                        mov     rcx, [rdi]                  ; RDI es el elemento base de comparación
+                        mov     rcx, [rdi]                  
                         mov     rbx, [rcx + 8]
                         mov     [rdi], rbx
-                        cmp     QWORD [rdi], 0              ; verificamos que no sea el fin de la lista
+                        cmp     QWORD [rdi], 0              
                         jz      return             
 
 compare_start:  
-                        push    rdi                         ; Guardamos en la pila RDI Y RSI
+                        push    rdi                        
                         push    rsi
-                        mov     rax, rsi                    ; Copiamos la funcion (*cmp)(rdi, rsi)
-                        mov     rcx, [rdi]                  ; Copiamos begin->data 
-                        mov     rdi, [rcx]                  ; Reescribimos RDI = begin->data ej: [0] = 8
-                        mov     rsi, [rbx]                  ; Reescribimos RSI con begin->data del elemento siguiente [1] = 4
-                        call    rax                         ; Llamamos la funcion (*cmp)(RDI, RSI) RAX = (*cmp)(RDI, RSI)
-                        pop     rsi                         ; Recuperamos la funcion (*cmp)
-                        pop     rdi                         ; Recuperamos el elemento base
+                        mov     rax, rsi                    
+                        mov     rcx, [rdi]                   
+                        mov     rdi, [rcx]                  
+                        mov     rsi, [rbx]                  
+                        call    rax                        
+                        pop     rsi                         
+                        pop     rdi                         
                         cmp     rax, 0                      
-                        jg      ft_swap                     ; [0] = 8 > [1] = 4 si se cumple la condicion saltamos a ft_swap
+                        jg      ft_swap                     
 
 next_element:                       
-                        mov     rcx, [rbx + 8]              ; si no se cumple avanzamos al siguien elemento para comparar con el elemento base 
+                        mov     rcx, [rbx + 8]               
                         mov     rbx, rcx
-                        cmp     rbx, 0                      ; Verificamos que no sea el fin de la lista  
-                        jz      element_base                ; si es el fin de la lista avanzamos el elemento base
-                        jmp     compare_start               ; sino volvemos a comparar
+                        cmp     rbx, 0                        
+                        jz      element_base                
+                        jmp     compare_start               
 
 ft_swap:
                         mov     r8, [rdi]
-                        mov     rcx, [r8]                   ; RCX = elemento mayor
-                        mov     rax, [rbx]                  ; RAX = elemto menor
-                        mov     [r8], rax                   ; [r8] apunta a la direccion del elemento mayor y alli copiamos el elemento menor
-                        mov     [rbx], rcx                  ; [rbx] apunta a la direccion del elemento menor y alli copiamos el elemento mayor
-                        jmp     next_element                ; continuamos con la comparación
+                        mov     rcx, [r8]                   
+                        mov     rax, [rbx]                  
+                        mov     [r8], rax                   
+                        mov     [rbx], rcx                  
+                        jmp     next_element               
 
 return:
-                        mov     [rdi], r12                  ; Volvemos al principio de la lista
+                        mov     [rdi], r12                  
+
 finish:
                         pop     r12
                         pop     rbx					
+                        ret
+return2:
                         ret
